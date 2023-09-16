@@ -27,12 +27,16 @@ jobs:
         run: |
           aws s3 cp ./templates s3://${{ env.ARTIFACT_BUCKET }}/templates/ --recursive
 
+      - name: Set unique ChangeSet name
+        id: set-changeset-name
+        run: echo "CHANGESET_NAME=$(date +'%Y%m%d%H%M%S')-${{ github.run_id }}" >> $GITHUB_ENV
+
       - name: Create Change Set
         run: |
           aws cloudformation create-change-set \
             --stack-name Deploy-Resource \
             --template-url https://artifacts-cft-deploy.s3.ap-south-1.amazonaws.com/templates/sam_template.yml \
-            --change-set-name LambdaStack \
+            --change-set-name $CHANGESET_NAME \
             --capabilities CAPABILITY_NAMED_IAM
         # Replace with your own stack name, S3 URL, change set name, and parameters
 
@@ -40,4 +44,4 @@ jobs:
         run: |
           aws cloudformation execute-change-set \
             --stack-name Deploy-Resource \
-            --change-set-name LambdaStack
+            --change-set-name $CHANGESET_NAME
