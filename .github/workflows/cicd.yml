@@ -25,4 +25,4 @@ jobs:
 
       - name: Upload Templates to S3
         run: |
-          aws s3 cp ./templates s3://$ {{ env.artifact_bucket }}/ --recursive
+          aws s3 cp ./templates s3://${{ env.ARTIFACT_BUCKET }}/ --recursive
