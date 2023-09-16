@@ -26,3 +26,18 @@ jobs:
       - name: Upload Templates to S3
         run: |
           aws s3 cp ./templates s3://${{ env.ARTIFACT_BUCKET }}/templates/ --recursive
+
+      - name: Create Change Set
+        run: |
+          aws cloudformation create-change-set \
+            --stack-name Deploy-Resource \
+            --template-url https://artifacts-cft-deploy.s3.ap-south-1.amazonaws.com/templates/sam_template.yml \
+            --change-set-name LambdaStack \
+            --capabilities CAPABILITY_NAMED_IAM
+        # Replace with your own stack name, S3 URL, change set name, and parameters
+
+      - name: Execute Change Set
+        run: |
+          aws cloudformation execute-change-set \
+            --stack-name Deploy-Resource \
+            --change-set-name LambdaStack
