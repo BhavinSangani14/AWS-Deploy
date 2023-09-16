@@ -29,7 +29,7 @@ jobs:
 
       - name: Set unique ChangeSet name
         id: set-changeset-name
-        run: echo "CHANGESET_NAME=$(date +'%Y%m%d%H%M%S')${{ github.run_id }}" >> $GITHUB_ENV
+        run: echo "CHANGESET_NAME=changeset$(date +'%Y%m%d%H%M%S')${{ github.run_id }}" >> $GITHUB_ENV
 
       - name: Create Change Set
         run: |
