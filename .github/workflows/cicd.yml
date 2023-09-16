@@ -40,21 +40,20 @@ jobs:
             --capabilities CAPABILITY_NAMED_IAM
         # Replace with your own stack name, S3 URL, change set name, and parameters
 
-      - name: Wait for Stack Creation to Complete
+      - name: Wait for ChangeSet to be Available
         run: |
           while true; do
-            status=$(aws cloudformation describe-stacks --stack-name Deploy-Resource --query "Stacks[0].StackStatus" --output text)
+            status=$(aws cloudformation describe-change-set --change-set-name $CHANGESET_NAME --stack-name Deploy-Resource --query "Status" --output text)
             if [ "$status" == "CREATE_COMPLETE" ]; then
               break
-            elif [ "$status" == "ROLLBACK_COMPLETE" ]; then
-              echo "Stack creation failed. Aborting."
+            elif [ "$status" == "FAILED" ]; then
+              echo "ChangeSet creation failed. Aborting."
               exit 1
             else
-              echo "Stack status is $status. Waiting for completion..."
-              sleep 60  # Adjust the polling interval as needed
+              echo "ChangeSet status is $status. Waiting for completion..."
+              sleep 30  # Adjust the polling interval as needed
             fi
           done
-
 
       - name: Execute Change Set
         run: |
