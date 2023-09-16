@@ -40,6 +40,22 @@ jobs:
             --capabilities CAPABILITY_NAMED_IAM
         # Replace with your own stack name, S3 URL, change set name, and parameters
 
+      - name: Wait for Stack Creation to Complete
+        run: |
+          while true; do
+            status=$(aws cloudformation describe-stacks --stack-name Deploy-Resource --query "Stacks[0].StackStatus" --output text)
+            if [ "$status" == "CREATE_COMPLETE" ]; then
+              break
+            elif [ "$status" == "ROLLBACK_COMPLETE" ]; then
+              echo "Stack creation failed. Aborting."
+              exit 1
+            else
+              echo "Stack status is $status. Waiting for completion..."
+              sleep 60  # Adjust the polling interval as needed
+            fi
+          done
+
+
       - name: Execute Change Set
         run: |
           aws cloudformation execute-change-set \
