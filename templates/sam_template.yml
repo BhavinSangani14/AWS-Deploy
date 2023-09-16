@@ -10,4 +10,4 @@ Resources:
   MyS3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: bucket-cft-gh-2
+      BucketName: bucket-cft-gh-update
