@@ -6,3 +6,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: bucket-cft-gh
+
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: bucket-cft-gh-2
