@@ -64,10 +64,10 @@ jobs:
         run: |
           while true; do
             status=$(aws cloudformation describe-stacks --stack-name Deploy-Resource --query "Stacks[0].StackStatus" --output text)
-            if [ "$status" == "CREATE_COMPLETE" ]; then
+            if [ "$status" == "UPDATE_COMPLETE" ]; then
               break
-            elif [ "$status" == "ROLLBACK_COMPLETE" ]; then
-              echo "Stack creation failed. Aborting."
+            elif [ "$status" == "UPDATE_ROLLBACK_COMPLETE" ]; then
+              echo "Stack execution failed. Aborting."
               exit 1
             else
               echo "Stack status is $status. Waiting for completion..."
