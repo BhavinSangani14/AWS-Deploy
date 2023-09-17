@@ -8,6 +8,10 @@ Parameters:
   pBucketName2:
     Type: String
     Description: Second Bucket Name
+  pBucketName3:
+    Type: String
+    Description: Second Bucket Name
+    Default: cft-deploy-bucket-3
 
 Resources:
   MyS3Bucket:
@@ -19,3 +23,8 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref pBucketName2
+
+  MyS3Bucket3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref pBucketName3
