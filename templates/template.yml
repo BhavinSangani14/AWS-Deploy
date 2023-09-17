@@ -13,22 +13,8 @@ Resources:
       TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/templates/s3_template.yml  
       StackName: SecurityStack
       Parameters:
-        AdministratorAccountId: 
-          !Transform
-          - Name: 'AWS::Include'
-            Parameters:
-              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
-            Type: 'AWS::Include'
-            Export:
-              Name: 'Fn::Sub-param-config'
-        RoleName: 
-          !Transform
-          - Name: 'AWS::Include'
-            Parameters:
-              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
-            Type: 'AWS::Include'
-            Export:
-              Name: 'Fn::Sub-param-config'
+        AdministratorAccountId: 339498828560
+        RoleName: AWSCloudFormationStackSetExecutionRole
 
   S3NestedStack:
     Type: AWS::CloudFormation::Stack
@@ -36,19 +22,5 @@ Resources:
       TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/templates/s3_template.yml  
       StackName: S3Stack
       Parameters:
-        pBucketName1: 
-          !Transform
-          - Name: 'AWS::Include'
-            Parameters:
-              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.s3.json'
-            Type: 'AWS::Include'
-            Export:
-              Name: 'Fn::Sub-param-config'
-        pBucketName2: 
-          !Transform
-          - Name: 'AWS::Include'
-            Parameters:
-              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.s3.json'
-            Type: 'AWS::Include'
-            Export:
-              Name: 'Fn::Sub-param-config'
+        pBucketName1: cft-deploy-bucket-1
+        pBucketName2: cft-deploy-bucket-2
