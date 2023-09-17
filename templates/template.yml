@@ -1,5 +1,4 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Transform: AWS::Serverless-2016-10-31
 Description: Parent Stack with Two Nested Stacks
 
 Parameters:
@@ -14,14 +13,16 @@ Resources:
       TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/s3_template.yml  
       StackName: SecurityStack
       Parameters:
-        AdministratorAccountId: !Transform
+        AdministratorAccountId: 
+          !Transform
           - Name: 'AWS::Include'
             Parameters:
               Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
             Type: 'AWS::Include'
             Export:
               Name: 'Fn::Sub-param-config'
-        RoleName: !Transform
+        RoleName: 
+          !Transform
           - Name: 'AWS::Include'
             Parameters:
               Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
@@ -35,14 +36,16 @@ Resources:
       TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/security_template.yml  
       StackName: S3Stack
       Parameters:
-        pBucketName1: !Transform
+        pBucketName1: 
+          !Transform
           - Name: 'AWS::Include'
             Parameters:
               Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
             Type: 'AWS::Include'
             Export:
               Name: 'Fn::Sub-param-config'
-        pBucketName2: !Transform
+        pBucketName2: 
+          !Transform
           - Name: 'AWS::Include'
             Parameters:
               Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
@@ -50,10 +53,10 @@ Resources:
             Export:
               Name: 'Fn::Sub-param-config'
 
-Outputs:
-  ParentStackOutput1:
-    Description: Output from Parent Stack
-    Value: !Ref ParentStackResource
-  ParentStackOutput2:
-    Description: Output from Nested Stack 2
-    Value: !GetAtt NestedStack2Resource.Outputs.OutputFromNestedStack2
+# Outputs:
+#   ParentStackOutput1:
+#     Description: Output from Parent Stack
+#     Value: !Ref ParentStackResource
+#   ParentStackOutput2:
+#     Description: Output from Nested Stack 2
+#     Value: !GetAtt NestedStack2Resource.Outputs.OutputFromNestedStack2
