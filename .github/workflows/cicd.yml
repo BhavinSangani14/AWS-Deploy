@@ -37,11 +37,11 @@ jobs:
 
       - name: Upload Templates to S3
         run: |
-          aws s3 cp templates/${{ matrix.template }} s3://$ARTIFACT_BUCKET/templates/${{ matrix.template }}
+          aws s3 cp templates/${{ matrix.template }} s3://$ARTIFACT_BUCKET/templates
 
       - name: Upload Config to S3
         run: |
-          aws s3 cp config/${{ matrix.config_file }} s3://$ARTIFACT_BUCKET/config_file/${{ matrix.config_file }}
+          aws s3 cp config/${{ matrix.config_file }} s3://$ARTIFACT_BUCKET/config_file
 
       - name: Check if Parent Stack exists
         id: check-stack-exists
@@ -54,21 +54,12 @@ jobs:
         run: echo "CHANGESET_NAME=changeset$(date +'%Y%m%d%H%M%S')${{ github.run_id }}" >> $GITHUB_ENV
 
       - name: Create or Update Stack/Change Set for Parent Stack
-        if: matrix.template == 'template.yml'
         run: |
-          if [ -z "${{ steps.check-stack-exists.outputs }}" ]; then
-            # Parent Stack does not exist, create it
-            aws cloudformation create-stack \
-              --stack-name $STACK_NAME \
-              --template-url https://$ARTIFACT_BUCKET.s3.amazonaws.com/templates/template.yml \
-              # --parameters config/dev.config.json
-
-          else:
-            aws cloudformation create-change-set \
-            --stack-name $STACK_NAME \
-            --template-url https://$ARTIFACT_BUCKET.s3.ap-south-1.amazonaws.com/templates/template.yml \
-            --change-set-name $CHANGESET_NAME \
-            --capabilities CAPABILITY_NAMED_IAM
+          aws cloudformation create-change-set \
+          --stack-name $STACK_NAME \
+          --template-url https://$ARTIFACT_BUCKET.s3.ap-south-1.amazonaws.com/templates/template.yml \
+          --change-set-name $CHANGESET_NAME \
+          --capabilities CAPABILITY_NAMED_IAM
 
       - name: Wait for ChangeSet to be Available
         run: |
