@@ -10,7 +10,7 @@ Resources:
   SecurityNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub https://{pArtifactBucket}.s3.ap-south-1.amazonaws.com/templates/security_template.yml  
+      TemplateURL: !Sub https://${pArtifactBucket}.s3.ap-south-1.amazonaws.com/templates/security_template.yml  
       Parameters:
         AdministratorAccountId: 339498828560
         RoleName: AWSCloudFormationStackSetExecutionRole
@@ -18,7 +18,7 @@ Resources:
   S3NestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub https://{pArtifactBucket}.s3.ap-south-1.amazonaws.com/templates/s3_template.yml  
+      TemplateURL: !Sub https://${pArtifactBucket}.s3.ap-south-1.amazonaws.com/templates/s3_template.yml  
       Parameters:
         pBucketName1: cft-deploy-bucket-1
         pBucketName2: cft-deploy-bucket-2
