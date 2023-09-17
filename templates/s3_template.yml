@@ -1,0 +1,21 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Create a Specific S3 Bucket
+
+Parameters:
+  pBucketName1:
+    Type: String
+    Description: First Bucket Name
+  pBucketName2:
+    Type: String
+    Description: Second Bucket Name
+
+Resources:
+  MyS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref pBucketName1
+
+  MyS3Bucket2:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref pBucketName2
