@@ -37,11 +37,11 @@ jobs:
 
       - name: Upload Templates to S3
         run: |
-          aws s3 cp templates/${{ matrix.template }} s3://$ARTIFACT_BUCKET/templates
+          aws s3 cp templates/${{ matrix.template }} s3://$ARTIFACT_BUCKET/templates/
 
       - name: Upload Config to S3
         run: |
-          aws s3 cp config/${{ matrix.config_file }} s3://$ARTIFACT_BUCKET/config_file
+          aws s3 cp config/${{ matrix.config_file }} s3://$ARTIFACT_BUCKET/config_file/
 
       - name: Check if Parent Stack exists
         id: check-stack-exists
