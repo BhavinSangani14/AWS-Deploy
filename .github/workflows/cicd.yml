@@ -6,11 +6,23 @@ on:
       - main  
 
 jobs:
-  deploy:
+  cicd:
     runs-on: ubuntu-latest
 
     env:
       ARTIFACT_BUCKET: "artifacts-cft-deploy"
+      STACK_NAME: "Deploy-Resource"
+
+    strategy:
+      matrix:
+        template:
+          - tempalate.yml
+          - security_template.yml
+          - s3_template.yml
+        config_file:
+          - dev.config.json
+          - nested.security.json
+          - nested.s3.json
 
     steps:
       - name: Checkout Code
@@ -25,24 +37,43 @@ jobs:
 
       - name: Upload Templates to S3
         run: |
-          aws s3 cp ./templates s3://${{ env.ARTIFACT_BUCKET }}/templates/ --recursive
+          aws s3 cp templates/${{ matrix.template }} s3://$ARTIFACT_BUCKET/templates/${{ matrix.template }}
+
+      - name: Upload Config to S3
+        run: |
+          aws s3 cp config/${{ matrix.config_file }} s3://$ARTIFACT_BUCKET/config_file/${{ matrix.config_file }}
+
+      - name: Check if Parent Stack exists
+        id: check-stack-exists
+        run: |
+          aws cloudformation describe-stacks --stack-name $STACK_NAME || echo "Parent Stack does not exist"
+        continue-on-error: true
 
       - name: Set unique ChangeSet name
         id: set-changeset-name
         run: echo "CHANGESET_NAME=changeset$(date +'%Y%m%d%H%M%S')${{ github.run_id }}" >> $GITHUB_ENV
 
-      - name: Create Change Set
+      - name: Create or Update Stack/Change Set for Parent Stack
+        if: matrix.template == 'template.yml'
         run: |
-          aws cloudformation create-change-set \
-            --stack-name Deploy-Resource \
-            --template-url https://artifacts-cft-deploy.s3.ap-south-1.amazonaws.com/templates/sam_template.yml \
+          if [ -z "${{ steps.check-stack-exists.outputs }}" ]; then
+            # Parent Stack does not exist, create it
+            aws cloudformation create-stack \
+              --stack-name $STACK_NAME \
+              --template-url https://$ARTIFACT_BUCKET.s3.amazonaws.com/templates/template.yml \
+              # --parameters config/dev.config.json
+
+          else:
+            aws cloudformation create-change-set \
+            --stack-name $STACK_NAME \
+            --template-url https://$ARTIFACT_BUCKET.s3.ap-south-1.amazonaws.com/templates/template.yml \
             --change-set-name $CHANGESET_NAME \
             --capabilities CAPABILITY_NAMED_IAM
 
       - name: Wait for ChangeSet to be Available
         run: |
           while true; do
-            status=$(aws cloudformation describe-change-set --change-set-name $CHANGESET_NAME --stack-name Deploy-Resource --query "Status" --output text)
+            status=$(aws cloudformation describe-change-set --change-set-name $CHANGESET_NAME --stack-name $STACK_NAME --query "Status" --output text)
             if [ "$status" == "CREATE_COMPLETE" ]; then
               break
             elif [ "$status" == "FAILED" ]; then
@@ -57,13 +88,13 @@ jobs:
       - name: Execute Change Set
         run: |
           aws cloudformation execute-change-set \
-            --stack-name Deploy-Resource \
+            --stack-name $STACK_NAME \
             --change-set-name $CHANGESET_NAME
 
       - name: Wait for Stack Execution to Complete
         run: |
           while true; do
-            status=$(aws cloudformation describe-stacks --stack-name Deploy-Resource --query "Stacks[0].StackStatus" --output text)
+            status=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].StackStatus" --output text)
             if [ "$status" == "UPDATE_COMPLETE" ]; then
               break
             elif [ "$status" == "UPDATE_ROLLBACK_COMPLETE" ]; then
