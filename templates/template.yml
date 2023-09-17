@@ -10,7 +10,7 @@ Resources:
   SecurityNestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/s3_template.yml  
+      TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/templates/s3_template.yml  
       StackName: SecurityStack
       Parameters:
         AdministratorAccountId: 
@@ -33,14 +33,14 @@ Resources:
   S3NestedStack:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/security_template.yml  
+      TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/templates/s3_template.yml  
       StackName: S3Stack
       Parameters:
         pBucketName1: 
           !Transform
           - Name: 'AWS::Include'
             Parameters:
-              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
+              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.s3.json'
             Type: 'AWS::Include'
             Export:
               Name: 'Fn::Sub-param-config'
@@ -48,15 +48,7 @@ Resources:
           !Transform
           - Name: 'AWS::Include'
             Parameters:
-              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.security.json'
+              Location: !Sub 's3://${pArtifactBucket}/config_file/nested.s3.json'
             Type: 'AWS::Include'
             Export:
               Name: 'Fn::Sub-param-config'
-
-# Outputs:
-#   ParentStackOutput1:
-#     Description: Output from Parent Stack
-#     Value: !Ref ParentStackResource
-#   ParentStackOutput2:
-#     Description: Output from Nested Stack 2
-#     Value: !GetAtt NestedStack2Resource.Outputs.OutputFromNestedStack2
