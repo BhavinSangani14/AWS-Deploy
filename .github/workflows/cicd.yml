@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         template:
-          - tempalate.yml
+          - template.yml
           - security_template.yml
           - s3_template.yml
         config_file:
