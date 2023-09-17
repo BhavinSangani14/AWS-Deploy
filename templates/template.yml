@@ -11,7 +11,6 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/templates/s3_template.yml  
-      StackName: SecurityStack
       Parameters:
         AdministratorAccountId: 339498828560
         RoleName: AWSCloudFormationStackSetExecutionRole
@@ -20,7 +19,6 @@ Resources:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub https://${pArtifactBucket}.amazonaws.com/templates/s3_template.yml  
-      StackName: S3Stack
       Parameters:
         pBucketName1: cft-deploy-bucket-1
         pBucketName2: cft-deploy-bucket-2
