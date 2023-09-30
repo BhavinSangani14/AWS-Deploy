@@ -12,7 +12,7 @@ Resources:
     Properties:
       TemplateURL: !Sub https://${pArtifactBucket}.s3.ap-south-1.amazonaws.com/templates/security_template.yml  
       Parameters:
-        AdministratorAccountId: 339498828560
+        AdministratorAccountId: Test
         RoleName: AWSCloudFormationStackSetExecutionRole
 
   S3NestedStack:
